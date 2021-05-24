@@ -4,7 +4,35 @@ const FULL_HEART = '♥'
 
 // Your JavaScript code goes here!
 
+//on load, add event listener to all like buttons by grabbing class, iterating through html collection
+//if heart full change back to empty heart, remove class
+//if heart empty:
+//invoke mimicServerCall
 
+function addEvents(event) {
+  const buttons = Array.from(document.querySelectorAll('.like-glyph'))
+  buttons.forEach(node => node.addEventListener('click', event))
+}
+
+function likeAction (event) {
+  let button = event.target
+  if(button.classList.contains('activated-heart')){
+    button.textContent = EMPTY_HEART
+    button.classList.remove('activated-heart')
+  } else {
+    mimicServerCall()
+    .then(() => {
+    button.textContent = FULL_HEART
+    button.classList.add('activated-heart')
+    })
+    .catch(() => {
+      let error = document.querySelector('#modal')
+      error.classList.remove('hidden')
+      setTimeout(() => error.classList.add('hidden'), 3000)
+    })
+  }
+  
+}
 
 
 //------------------------------------------------------------------------------
@@ -23,3 +51,9 @@ function mimicServerCall(url="http://mimicServer.example.com", config={}) {
     }, 300);
   });
 }
+
+function init() {
+  addEvents(likeAction)
+}
+
+document.addEventListener('DOMContentLoaded', init)
